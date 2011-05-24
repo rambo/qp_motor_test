@@ -1,3 +1,31 @@
+#include "qp_port.h"
+#include "bsp.h"
+#include "motor.h"
+
+
+
+
+enum { N_MOTORS = 2 };                                // number of philosophers
+static motor motors[N_MOTORS];
+
+//extern QActive * const AO_Motors[N_MOTORS];     // "opaque" pointers to Philo AO
+
+void setup()
+{
+    BSP_init();                                          // initialize the BSP
+    QF::init();       // initialize the framework and the underlying RT kernel
+    motors[0].setup(2,3,4);
+
+}
+
+
+
+
+
+
+
+
+/*
 // It seems this is required by PinChangeInt 
 #include <WProgram.h>
 #define DISABLE_PCINT_MULTI_SERVICE
@@ -72,3 +100,4 @@ void loop()
     }
     delay(3000);
 }
+*/
