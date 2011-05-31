@@ -9,7 +9,7 @@
 #include "bsp.h"
 
 enum MotorSignals {
-   DONE_SIG = Q_USER_SIG,        // published by motor
+   MOTOR_DONE_SIG = Q_USER_SIG,        // published by motor
    STALLED_SIG,        // published by motor
    PULSE_SIG,                      // posted globally since binding ISRs to member functions is just-about-impossible
    TERMINATE_SIG,             // published by BSP to terminate the application

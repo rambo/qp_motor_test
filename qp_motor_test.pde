@@ -26,6 +26,11 @@ void setup()
 
     motors[0].setup(2,3,4);
     motors[0].start(1, l_motorQueueSto[0], Q_DIM(l_motorQueueSto[0]));
+    
+    drive_event *de;
+    de = Q_NEW(drive_event, DRIVE_SIG);
+    de->amount = -100;
+    QF::publish(de);
 
 }
 

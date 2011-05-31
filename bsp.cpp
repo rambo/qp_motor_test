@@ -29,6 +29,8 @@
 #include "bsp.h"
 #include <Wprogram.h>
 
+
+
 Q_DEFINE_THIS_FILE
 
 //#define SAVE_POWER
@@ -97,9 +99,16 @@ void QF::onIdle(QF_INT_KEY_TYPE key) {
 
 //............................................................................
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+    Serial.print(millis()); \
+    Serial.print(": ASSERT "); \
+    Serial.print(" in "); \
+    // What is this pointer and would it be any use ?
+//    Serial.print(Q_ROM_VAR file); \
+    Serial.print(*file); \
+    Serial.print(':'); \
+    Serial.println(line); \
     cli();                                              // lock all interrupts
     USER_LED_ON();                                  // User LED permanently ON
-    Serial.println("ASSERT!");
     asm volatile ("jmp 0x0000");    // perform a software reset of the Arduino
 }
 
