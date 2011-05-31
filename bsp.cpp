@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "qp_port.h"
 #include "bsp.h"
-#include "Wprogram.h"
+#include <Wprogram.h>
 
 Q_DEFINE_THIS_FILE
 

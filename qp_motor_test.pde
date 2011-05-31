@@ -9,6 +9,10 @@
 
 enum { N_MOTORS = 2 };                                // number of philosophers
 static motor motors[N_MOTORS];
+static QSubscrList   l_subscrSto[MAX_PUB_SIG];
+static QEvent l_smlPoolSto[2*N_MOTORS];   // storage for the small event pool
+static QEvent const *l_motorQueueSto[N_MOTORS][N_MOTORS];
+
 
 //extern QActive * const AO_Motors[N_MOTORS];     // "opaque" pointers to Philo AO
 
@@ -17,7 +21,11 @@ void setup()
     
     BSP_init();                                          // initialize the BSP
     QF::init();       // initialize the framework and the underlying RT kernel
+    QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
+    QF::psInit(l_subscrSto, Q_DIM(l_subscrSto));     // init publish-subscribe
+
     motors[0].setup(2,3,4);
+    motors[0].start(1, l_motorQueueSto[0], Q_DIM(l_motorQueueSto[0]));
 
 }
 

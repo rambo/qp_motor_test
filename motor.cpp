@@ -9,7 +9,7 @@
  *
  * See: http://www.cprogramming.com/tutorial/initialization-lists-c++.html
  */
-motor::motor() : QActive((QStateHandler)&motor::initial), pwm_timer(PWM_TIMEOUT_SIG) , stall_timer(STALL_TIMEOUT_SIG)
+motor::motor() : QActive((QStateHandler)&motor::initial), pwm_timer(PWM_TIMEOUT_SIG), stall_timer(STALL_TIMEOUT_SIG)
 {
 }
 
@@ -35,6 +35,7 @@ void motor::pulse_handler(void* userData)
 
 QState motor::initial(motor *me, QEvent const *)
 {
+    me->subscribe(PULSE_SIG);
     return Q_TRAN(&motor::stopped);
 }
 
@@ -47,6 +48,20 @@ QState motor::stopped(motor *me, QEvent const *e)
             digitalWrite(me->a1_pin, LOW);
             digitalWrite(me->a2_pin, LOW);
         }
+        case DRIVE_SIG:
+        {
+            me->target_position += ((drive_event *)e)->amount;
+            if (((drive_event *)e)->amount > 0)
+            {
+                me->direction = true;
+            }
+            else
+            {
+                me->direction = false;
+            }
+            return Q_TRAN(&motor::driving);
+        }
+        // Track pulses from inertia etc
         case PULSE_SIG:
         {
             if (((pulse_event *)e)->pin == me->pulse_pin)
@@ -60,6 +75,7 @@ QState motor::stopped(motor *me, QEvent const *e)
                     me->position--;
                 }
             }
+            return Q_HANDLED();
         }
         default:
         {
@@ -70,4 +86,63 @@ QState motor::stopped(motor *me, QEvent const *e)
     return Q_SUPER(&QHsm::top);
 }
 
+QState motor::driving(motor *me, QEvent const *e)
+{
+    switch (e->sig)
+    {
+        case Q_ENTRY_SIG:
+        {
+            if (me->direction)
+            {
+                digitalWrite(me->a1_pin, HIGH);
+                digitalWrite(me->a2_pin, LOW);
+            }
+            else
+            {
+                digitalWrite(me->a1_pin, LOW);
+                digitalWrite(me->a2_pin, HIGH);
+            }
+        }
+        case DRIVE_SIG:
+        {
+            // PONDER: Either ignore it or what ??
+            return Q_HANDLED();
+        }
+        case PULSE_SIG:
+        {
+            if (((pulse_event *)e)->pin == me->pulse_pin)
+            {
+                if (me->direction)
+                {
+                    me->position++;
+                    if (me->position >= me->position)
+                    {
+                        QF::publish(Q_NEW(QEvent, DONE_SIG));
+                        return Q_TRAN(&motor::stopped);
+                    }
+                }
+                else
+                {
+                    me->position--;
+                    if (me->position <= me->position)
+                    {
+                        QF::publish(Q_NEW(QEvent, DONE_SIG));
+                        return Q_TRAN(&motor::stopped);
+                    }
+                }
+            }
+            return Q_HANDLED();
+        }
+        case Q_EXIT_SIG:
+        {
+            digitalWrite(me->a1_pin, LOW);
+            digitalWrite(me->a2_pin, LOW);
+        }
+        default:
+        {
+            return Q_HANDLED();
+        }
+    }
+    return Q_SUPER(&QHsm::top);
+}
 

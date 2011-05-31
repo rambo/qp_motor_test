@@ -26,6 +26,11 @@ struct pulse_event : public QEvent
     uint8_t pin;
 };
 
+struct drive_event : public QEvent
+{
+    int amount; //contains direction too.
+};
+
 
 class motor : public QActive
 {
@@ -40,6 +45,7 @@ class motor : public QActive
         uint8_t pulse_pin;
         boolean direction;
         int position;
+        int target_position;
         QTimeEvt pwm_timer;
         QTimeEvt stall_timer;
 
@@ -47,7 +53,7 @@ class motor : public QActive
         static QState stopped (motor *me, QEvent const *e);
         static QState driving (motor *me, QEvent const *e);
 
-        void pulse_handler();
+        static void pulse_handler();
 };
 
 
