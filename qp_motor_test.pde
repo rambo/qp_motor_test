@@ -1,7 +1,9 @@
 #include "qp_port.h"
 #include "bsp.h"
 #include "motor.h"
-
+// If this is not here we get a compile error on i2c_accelerometer.h (WTF!)
+#define DISABLE_PCINT_MULTI_SERVICE
+#include <PinChangeInt_userData.h>
 
 
 
@@ -12,12 +14,12 @@ static motor motors[N_MOTORS];
 
 void setup()
 {
+    
     BSP_init();                                          // initialize the BSP
     QF::init();       // initialize the framework and the underlying RT kernel
     motors[0].setup(2,3,4);
 
 }
-
 
 
 

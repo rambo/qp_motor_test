@@ -1,6 +1,9 @@
 #ifndef motor_h
 #define motor_h
 #include <WProgram.h> 
+#include <PinChangeInt_userData.h>
+
+
 //#include <stdint.h>
 #include "qp_port.h"
 #include "bsp.h"
@@ -29,6 +32,7 @@ class motor : public QActive
     public:
         motor();
         void setup(uint8_t a1, uint8_t a2, uint8_t pulse);
+        static void pulse_handler(void* me_ptr);
 
     protected:
         uint8_t a1_pin;
