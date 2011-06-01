@@ -18,19 +18,46 @@ static QEvent const *l_motorQueueSto[N_MOTORS][N_MOTORS];
 
 void setup()
 {
-    
     BSP_init();                                          // initialize the BSP
+
+    Serial.print("MOTOR_DONE_SIG=");
+    Serial.println(MOTOR_DONE_SIG, DEC);
+    
+    Serial.print("STALLED_SIG=");    
+    Serial.println(STALLED_SIG, DEC);    
+    
+    Serial.print("PULSE_SIG=");   
+    Serial.println(PULSE_SIG, DEC);
+    
+    Serial.print("TERMINATE_SIG=");
+    Serial.println(TERMINATE_SIG, DEC);
+    
+    Serial.print("MAX_PUB_SIG=");
+    Serial.println(MAX_PUB_SIG, DEC);
+    
+    Serial.print("DRIVE_SIG=");   
+    Serial.println(DRIVE_SIG, DEC);
+    
+    Serial.print("PWM_TIMEOUT_SIG=");
+    Serial.println(PWM_TIMEOUT_SIG, DEC);
+    
+    Serial.print("STALL_TIMEOUT_SIG=");
+    Serial.println(STALL_TIMEOUT_SIG, DEC);
+    
+    Serial.print("MAX_SIG=");
+    Serial.println(MAX_SIG, DEC);
+
     QF::init();       // initialize the framework and the underlying RT kernel
     QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
     QF::psInit(l_subscrSto, Q_DIM(l_subscrSto));     // init publish-subscribe
 
     motors[0].setup(2,3,4);
     motors[0].start(1, l_motorQueueSto[0], Q_DIM(l_motorQueueSto[0]));
-    
+
     drive_event *de;
     de = Q_NEW(drive_event, DRIVE_SIG);
     de->amount = -100;
-    QF::publish(de);
+    motors[0].postFIFO(de);
 
 }
 

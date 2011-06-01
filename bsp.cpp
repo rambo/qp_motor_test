@@ -51,7 +51,7 @@ Q_DEFINE_THIS_FILE
 ISR(TIMER2_COMPA_vect) {
     // No need to clear the interrupt source since the Timer2 compare
     // interrupt is automatically cleard in hardware when the ISR runs.
-
+    Serial.println("Tick");
     QF::tick();                               // process all armed time events
 }
 
@@ -62,6 +62,8 @@ void BSP_init(void) {
 
     Serial.begin(115200);
     Serial.println("Start");
+
+
 }
 //............................................................................
 void QF::onStartup(void) {
@@ -78,6 +80,7 @@ void QF::onCleanup(void) {
 }
 //............................................................................
 void QF::onIdle(QF_INT_KEY_TYPE key) {
+    DEBUG_PRINT("Hello World!");
 
     USER_LED_ON();     // toggle the User LED on Arduino on and off, see NOTE1
     USER_LED_OFF();
@@ -99,16 +102,21 @@ void QF::onIdle(QF_INT_KEY_TYPE key) {
 
 //............................................................................
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+    // Copied from http://www.arduino.cc/en/Reference/PROGMEM
+    char buffer[20];
+    strcpy_P(buffer, (char*)pgm_read_word(file)); // Necessary casts and dereferencing, just copy. 
+    Serial.print("file=");
+    Serial.print(*file, HEX);
+
     Serial.print(millis()); \
     Serial.print(": ASSERT "); \
     Serial.print(" in "); \
-    // What is this pointer and would it be any use ?
-//    Serial.print(Q_ROM_VAR file); \
-    Serial.print(*file); \
-    Serial.print(':'); \
+    //Serial.print(buffer); \
+    Serial.print(":"); \
     Serial.println(line); \
     cli();                                              // lock all interrupts
     USER_LED_ON();                                  // User LED permanently ON
+    while (true); // loop infinetely for now to avoid spamming
     asm volatile ("jmp 0x0000");    // perform a software reset of the Arduino
 }
 

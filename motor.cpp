@@ -36,21 +36,42 @@ void motor::pulse_handler(void* userData)
 
 QState motor::initial(motor *me, QEvent const *)
 {
-    me->subscribe(PULSE_SIG);
     DEBUG_PRINT("hello world!");
+    me->subscribe(PULSE_SIG);
+    DEBUG_PRINT("bye world!");
     return Q_TRAN(&motor::stopped);
 }
 
 QState motor::stopped(motor *me, QEvent const *e)
 {
     DEBUG_PRINT("hello world!");
+    Serial.print("e->sig: ");
+    Serial.println(e->sig, DEC);
     switch (e->sig)
     {
+        // Not real handler but we need to handle it
+        case Q_INIT_SIG:
+        {
+            DEBUG_PRINT("Q_INIT_SIG, stub");
+            return Q_HANDLED();
+        }
+        // Not real handler but checking if the timeout is firing before I armed it
+        case PWM_TIMEOUT_SIG:
+        {
+            DEBUG_PRINT("PWM_TIMEOUT_SIG, stub");
+            return Q_HANDLED();
+        }
+        case STALL_TIMEOUT_SIG:
+        {
+            DEBUG_PRINT("STALL_TIMEOUT_SIG, stub");
+            return Q_HANDLED();
+        }
         case Q_ENTRY_SIG:
         {
             DEBUG_PRINT("Q_ENTRY_SIG");
             digitalWrite(me->a1_pin, LOW);
             digitalWrite(me->a2_pin, LOW);
+            DEBUG_PRINT("Q_ENTRY_SIG, handled");
             return Q_HANDLED();
         }
         case DRIVE_SIG:
@@ -83,16 +104,20 @@ QState motor::stopped(motor *me, QEvent const *e)
                     me->position--;
                 }
             }
+            DEBUG_PRINT("PULSE_SIG, handled");
             return Q_HANDLED();
         }
     }
 
+    DEBUG_PRINT("byebye world!");
     return Q_SUPER(&QHsm::top);
 }
 
 QState motor::driving(motor *me, QEvent const *e)
 {
     DEBUG_PRINT("Hello world");
+    Serial.print("e->sig: ");
+    Serial.println(e->sig, DEC);
     switch (e->sig)
     {
         case Q_ENTRY_SIG:
@@ -108,12 +133,14 @@ QState motor::driving(motor *me, QEvent const *e)
                 digitalWrite(me->a1_pin, LOW);
                 digitalWrite(me->a2_pin, HIGH);
             }
+            DEBUG_PRINT("Q_ENTRY_SIG, handled");
             return Q_HANDLED();
         }
         case DRIVE_SIG:
         {
             DEBUG_PRINT("DRIVE_SIG");
             // PONDER: Either ignore it or what ??
+            DEBUG_PRINT("DRIVE_SIG, handled");
             return Q_HANDLED();
         }
         case PULSE_SIG:
@@ -128,6 +155,7 @@ QState motor::driving(motor *me, QEvent const *e)
                     {
                         DEBUG_PRINT("PULSE_SIG, sending done");
                         QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
+                        DEBUG_PRINT("PULSE_SIG, transitioning");
                         return Q_TRAN(&motor::stopped);
                     }
                 }
@@ -138,10 +166,12 @@ QState motor::driving(motor *me, QEvent const *e)
                     {
                         DEBUG_PRINT("PULSE_SIG, sending done");
                         QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
+                        DEBUG_PRINT("PULSE_SIG, transitioning");
                         return Q_TRAN(&motor::stopped);
                     }
                 }
             }
+            DEBUG_PRINT("PULSE_SIG, handled");
             return Q_HANDLED();
         }
         case Q_EXIT_SIG:
@@ -149,9 +179,11 @@ QState motor::driving(motor *me, QEvent const *e)
             DEBUG_PRINT("Q_EXIT_SIG");
             digitalWrite(me->a1_pin, LOW);
             digitalWrite(me->a2_pin, LOW);
+            DEBUG_PRINT("Q_EXIT_SIG, handled");
             return Q_HANDLED();
         }
     }
+    DEBUG_PRINT("byebye world!");
     return Q_SUPER(&QHsm::top);
 }
 
