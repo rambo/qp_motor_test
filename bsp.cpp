@@ -102,18 +102,17 @@ void QF::onIdle(QF_INT_KEY_TYPE key) {
 
 //............................................................................
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
+    /*
     // Copied from http://www.arduino.cc/en/Reference/PROGMEM
     char buffer[20];
     strcpy_P(buffer, (char*)pgm_read_word(file)); // Necessary casts and dereferencing, just copy. 
-    Serial.print("file=");
-    Serial.print(*file, HEX);
-
-    Serial.print(millis()); \
-    Serial.print(": ASSERT "); \
-    Serial.print(" in "); \
-    //Serial.print(buffer); \
-    Serial.print(":"); \
-    Serial.println(line); \
+    */
+    Serial.print(millis()); 
+    Serial.print(": ASSERT "); 
+    Serial.print(" in "); 
+    //Serial.print(buffer); 
+    Serial.print(":"); 
+    Serial.println(line, DEC); 
     cli();                                              // lock all interrupts
     USER_LED_ON();                                  // User LED permanently ON
     while (true); // loop infinetely for now to avoid spamming
