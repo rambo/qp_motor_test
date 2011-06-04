@@ -116,7 +116,7 @@ void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     PGM_P pointer = (PGM_P)*file;
     do
     {
-        buffer = pgm_read_byte_near(pointer++);
+        buffer = Q_ROM_BYTE(pointer++);
         Serial.print(buffer, HEX); // Gives abunch of output, mostly unprintable characters ?
         Serial.print("=");
         Serial.print(buffer, BYTE); // Gives little output, mostly blanks.

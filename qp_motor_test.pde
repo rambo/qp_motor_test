@@ -9,9 +9,9 @@
 
 enum { N_MOTORS = 2 };                                // number of philosophers
 static motor motors[N_MOTORS];
-static QSubscrList   l_subscrSto[MAX_PUB_SIG];
-static QEvent l_smlPoolSto[4*N_MOTORS];   // storage for the small event pool
+static QEvent const *l_smlPoolSto[4*N_MOTORS];
 static QEvent const *l_motorQueueSto[N_MOTORS][4*N_MOTORS];
+static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 
 
 //extern QActive * const AO_Motors[N_MOTORS];     // "opaque" pointers to Philo AO
@@ -54,10 +54,13 @@ void setup()
     motors[0].setup(2,3,4);
     motors[0].start(1, l_motorQueueSto[0], Q_DIM(l_motorQueueSto[0]));
 
+    Serial.println("drive_event *de;");
     drive_event *de;
     // This triggers assert, apparently we run out of pool space, which should not be possible unless our pool init is messed up.
+    Serial.println("de = Q_NEW(drive_event, DRIVE_SIG);");
     de = Q_NEW(drive_event, DRIVE_SIG);
     de->amount = -100;
+    Serial.println("motors[0].postFIFO(de);");
     motors[0].postFIFO(de);
 
 }
