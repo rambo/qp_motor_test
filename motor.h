@@ -1,12 +1,11 @@
 #ifndef motor_h
 #define motor_h
 #include <WProgram.h> 
+#include "qp_port.h"
+#include "bsp.h"
 #include <PinChangeInt_userData.h>
 
 
-//#include <stdint.h>
-#include "qp_port.h"
-#include "bsp.h"
 
 enum MotorSignals {
    MOTOR_DONE_SIG = Q_USER_SIG,        // published by motor

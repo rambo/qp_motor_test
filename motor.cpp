@@ -2,7 +2,7 @@
 #include "qp_port.h"
 #include "motor.h"
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
 
 
 /**

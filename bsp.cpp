@@ -28,6 +28,7 @@
 #include "qp_port.h"
 #include "bsp.h"
 #include <Wprogram.h>
+#include <avr/pgmspace.h>
 
 
 
@@ -102,15 +103,25 @@ void QF::onIdle(QF_INT_KEY_TYPE key) {
 
 //............................................................................
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
-    /*
-    // Copied from http://www.arduino.cc/en/Reference/PROGMEM
-    char buffer[20];
-    strcpy_P(buffer, (char*)pgm_read_word(file)); // Necessary casts and dereferencing, just copy. 
-    */
     Serial.print(millis()); 
     Serial.print(": ASSERT "); 
+    /*
+    Serial.print(" *file=");
+    Serial.println(*file, HEX);
+    */
     Serial.print(" in "); 
-    //Serial.print(buffer); 
+    /**
+     * Doesn't really work, gives just garbage out
+    byte buffer;
+    PGM_P pointer = (PGM_P)*file;
+    do
+    {
+        buffer = pgm_read_byte_near(pointer++);
+        Serial.print(buffer, HEX); // Gives abunch of output, mostly unprintable characters ?
+        Serial.print("=");
+        Serial.print(buffer, BYTE); // Gives little output, mostly blanks.
+    } while (buffer != NULL);
+    */
     Serial.print(":"); 
     Serial.println(line, DEC); 
     cli();                                              // lock all interrupts
