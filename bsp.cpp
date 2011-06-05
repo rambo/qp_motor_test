@@ -52,7 +52,7 @@ Q_DEFINE_THIS_FILE
 ISR(TIMER2_COMPA_vect) {
     // No need to clear the interrupt source since the Timer2 compare
     // interrupt is automatically cleard in hardware when the ISR runs.
-    Serial.println("Tick");
+    //Serial.println("Tick");
     QF::tick();                               // process all armed time events
 }
 
@@ -81,7 +81,7 @@ void QF::onCleanup(void) {
 }
 //............................................................................
 void QF::onIdle(QF_INT_KEY_TYPE key) {
-    DEBUG_PRINT("Hello World!");
+    //DEBUG_PRINT("Hello World!");
 
     USER_LED_ON();     // toggle the User LED on Arduino on and off, see NOTE1
     USER_LED_OFF();
