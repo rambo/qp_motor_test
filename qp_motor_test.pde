@@ -46,9 +46,19 @@ void setup()
     
     Serial.print("MAX_SIG=");
     Serial.println(MAX_SIG, DEC);
+    
+    Serial.print("sizeof(drive_event)=");
+    Serial.println(sizeof(drive_event), DEC);
+
+    Serial.print("sizeof(l_smlPoolSto)=");
+    Serial.println(sizeof(l_smlPoolSto), DEC);
+
+    Serial.print("sizeof(l_smlPoolSto[0])=");
+    Serial.println(sizeof(l_smlPoolSto[0]), DEC);
 
     QF::init();       // initialize the framework and the underlying RT kernel
-    QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
+    //QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
+    QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(drive_event));
     QF::psInit(l_subscrSto, Q_DIM(l_subscrSto));     // init publish-subscribe
 
     motors[0].setup(2,3,4);
