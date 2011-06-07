@@ -41,8 +41,6 @@ struct drive_event : public QEvent
     int amount; //contains direction too.
 };
 
-// TODO: Make an event for the MOTOR_DONE/STALLED_SIG that indicates *which* motor was done.
-
 class motor : public QActive
 {
     public:
