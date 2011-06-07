@@ -19,45 +19,10 @@ static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 void setup()
 {
     BSP_init();                                          // initialize the BSP
-
-    Serial.print("MOTOR_DONE_SIG=");
-    Serial.println(MOTOR_DONE_SIG, DEC);
-    
-    Serial.print("STALLED_SIG=");    
-    Serial.println(STALLED_SIG, DEC);    
-    
-    Serial.print("PULSE_SIG=");   
-    Serial.println(PULSE_SIG, DEC);
-    
-    Serial.print("TERMINATE_SIG=");
-    Serial.println(TERMINATE_SIG, DEC);
-    
-    Serial.print("MAX_PUB_SIG=");
-    Serial.println(MAX_PUB_SIG, DEC);
-    
-    Serial.print("DRIVE_SIG=");   
-    Serial.println(DRIVE_SIG, DEC);
-    
-    Serial.print("PWM_TIMEOUT_SIG=");
-    Serial.println(PWM_TIMEOUT_SIG, DEC);
-    
-    Serial.print("STALL_TIMEOUT_SIG=");
-    Serial.println(STALL_TIMEOUT_SIG, DEC);
-    
-    Serial.print("MAX_SIG=");
-    Serial.println(MAX_SIG, DEC);
-    
     Serial.print("sizeof(drive_event)=");
     Serial.println(sizeof(drive_event), DEC);
 
-    Serial.print("sizeof(l_smlPoolSto)=");
-    Serial.println(sizeof(l_smlPoolSto), DEC);
-
-    Serial.print("sizeof(l_smlPoolSto[0])=");
-    Serial.println(sizeof(l_smlPoolSto[0]), DEC);
-
     QF::init();       // initialize the framework and the underlying RT kernel
-    //QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
     QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(drive_event));
     QF::psInit(l_subscrSto, Q_DIM(l_subscrSto));     // init publish-subscribe
 

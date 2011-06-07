@@ -9,11 +9,11 @@
 
 enum MotorSignals {
    MOTOR_DONE_SIG = Q_USER_SIG,        // published by motor
-   STALLED_SIG,        // published by motor
+   MOTOR_STALLED_SIG,        // published by motor
    TERMINATE_SIG,             // published by BSP to terminate the application
    MAX_PUB_SIG,                                   // the last published signal
 
-   PULSE_SIG,                      // posted globally since binding ISRs to member functions is just-about-impossible
+   PULSE_SIG,                      // posted directly to motor, done by the interrupt handler attached in setup()
    DRIVE_SIG,                      // posted directly to motor, tell it to drive X pulses
    PWM_TIMEOUT_SIG,
    STALL_TIMEOUT_SIG,
@@ -22,7 +22,6 @@ enum MotorSignals {
 
 struct pulse_event : public QEvent
 {
-//    uint8_t pin;
 };
 
 struct drive_event : public QEvent
@@ -30,6 +29,7 @@ struct drive_event : public QEvent
     int amount; //contains direction too.
 };
 
+// TODO: Make an event for the MOTOR_DONE/STALLED_SIG that indicates *which* motor was done.
 
 class motor : public QActive
 {

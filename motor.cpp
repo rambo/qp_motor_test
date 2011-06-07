@@ -43,14 +43,6 @@ QState motor::stopped(motor *me, QEvent const *e)
 {
     switch (e->sig)
     {
-        // Not real handler but we need to handle it
-        /*
-        case Q_INIT_SIG:
-        {
-            DEBUG_PRINT("Q_INIT_SIG, stub");
-            return Q_HANDLED();
-        }
-        */
         // Not real handler but checking if the timeout is firing before I armed it
         case PWM_TIMEOUT_SIG:
         {
@@ -84,22 +76,17 @@ QState motor::stopped(motor *me, QEvent const *e)
         // Track pulses from inertia etc
         case PULSE_SIG:
         {
-            /*
-            if (((pulse_event *)e)->pin == me->pulse_pin)
+            if (me->direction)
             {
-              */
-                if (me->direction)
-                {
-                    me->position++;
-                }
-                else
-                {
-                    me->position--;
-                }
-                DEBUG_PRINT("PULSE_SIG");
-                Serial.print("me->position=");
-                Serial.println(me->position, DEC);
-            //}
+                me->position++;
+            }
+            else
+            {
+                me->position--;
+            }
+            DEBUG_PRINT("PULSE_SIG");
+            Serial.print("me->position=");
+            Serial.println(me->position, DEC);
             return Q_HANDLED();
         }
     }
@@ -131,38 +118,33 @@ QState motor::driving(motor *me, QEvent const *e)
         }
         case PULSE_SIG:
         {
-            /*
-            if (((pulse_event *)e)->pin == me->pulse_pin)
+            DEBUG_PRINT("PULSE_SIG");
+            Serial.print("me->position=");
+            Serial.println(me->position, DEC);
+            Serial.print("me->target_position=");
+            Serial.println(me->target_position, DEC);
+            if (me->direction)
             {
-              */
-                DEBUG_PRINT("PULSE_SIG");
-                Serial.print("me->position=");
-                Serial.println(me->position, DEC);
-                Serial.print("me->target_position=");
-                Serial.println(me->target_position, DEC);
-                if (me->direction)
+                me->position++;
+                if (me->position >= me->target_position)
                 {
-                    me->position++;
-                    if (me->position >= me->target_position)
-                    {
-                        DEBUG_PRINT("PULSE_SIG, sending done");
-                        QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
-                        DEBUG_PRINT("PULSE_SIG, transitioning");
-                        return Q_TRAN(&motor::stopped);
-                    }
+                    DEBUG_PRINT("PULSE_SIG, sending done");
+                    QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
+                    DEBUG_PRINT("PULSE_SIG, transitioning");
+                    return Q_TRAN(&motor::stopped);
                 }
-                else
+            }
+            else
+            {
+                me->position--;
+                if (me->position <= me->target_position)
                 {
-                    me->position--;
-                    if (me->position <= me->target_position)
-                    {
-                        DEBUG_PRINT("PULSE_SIG, sending done");
-                        QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
-                        DEBUG_PRINT("PULSE_SIG, transitioning");
-                        return Q_TRAN(&motor::stopped);
-                    }
+                    DEBUG_PRINT("PULSE_SIG, sending done");
+                    QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
+                    DEBUG_PRINT("PULSE_SIG, transitioning");
+                    return Q_TRAN(&motor::stopped);
                 }
-//            }
+            }
             DEBUG_PRINT("PULSE_SIG, handled");
             return Q_HANDLED();
         }
