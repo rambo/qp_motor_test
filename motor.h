@@ -22,7 +22,7 @@ enum MotorSignals {
 
 struct pulse_event : public QEvent
 {
-    uint8_t pin;
+//    uint8_t pin;
 };
 
 struct drive_event : public QEvent

@@ -22,16 +22,15 @@ void motor::setup(uint8_t a1, uint8_t a2, uint8_t pulse)
     pinMode(this->a1_pin, OUTPUT);
     pinMode(this->a2_pin, OUTPUT);
     pinMode(this->pulse_pin, INPUT);
-    PCintPort::attachInterrupt(pulse_pin, &motor::pulse_handler, RISING, &this->pulse_pin);
-
+    PCintPort::attachInterrupt(pulse_pin, &motor::pulse_handler, RISING, this);
 }
 
 void motor::pulse_handler(void* userData)
 {
     pulse_event *pe;
     pe = Q_NEW(pulse_event, PULSE_SIG);
-    pe->pin = *(uint8_t*)userData;
-    QF::publish(pe);
+    motor* me = (motor*)userData;
+    me->postFIFO(pe);
 }
 
 QState motor::initial(motor *me, QEvent const *)
@@ -85,8 +84,10 @@ QState motor::stopped(motor *me, QEvent const *e)
         // Track pulses from inertia etc
         case PULSE_SIG:
         {
+            /*
             if (((pulse_event *)e)->pin == me->pulse_pin)
             {
+              */
                 if (me->direction)
                 {
                     me->position++;
@@ -98,7 +99,7 @@ QState motor::stopped(motor *me, QEvent const *e)
                 DEBUG_PRINT("PULSE_SIG");
                 Serial.print("me->position=");
                 Serial.println(me->position, DEC);
-            }
+            //}
             return Q_HANDLED();
         }
     }
@@ -130,8 +131,10 @@ QState motor::driving(motor *me, QEvent const *e)
         }
         case PULSE_SIG:
         {
+            /*
             if (((pulse_event *)e)->pin == me->pulse_pin)
             {
+              */
                 DEBUG_PRINT("PULSE_SIG");
                 Serial.print("me->position=");
                 Serial.println(me->position, DEC);
@@ -159,7 +162,7 @@ QState motor::driving(motor *me, QEvent const *e)
                         return Q_TRAN(&motor::stopped);
                     }
                 }
-            }
+//            }
             DEBUG_PRINT("PULSE_SIG, handled");
             return Q_HANDLED();
         }
