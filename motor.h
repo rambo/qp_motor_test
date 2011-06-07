@@ -3,6 +3,8 @@
 #include <WProgram.h> 
 #include "qp_port.h"
 #include "bsp.h"
+// This might not be needed, or even desired but it should make debugging simpler
+#define DISABLE_PCINT_MULTI_SERVICE
 #include <PinChangeInt_userData.h>
 
 

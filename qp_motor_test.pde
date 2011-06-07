@@ -1,8 +1,7 @@
 #include "qp_port.h"
 #include "bsp.h"
 #include "motor.h"
-#define DISABLE_PCINT_MULTI_SERVICE
-// If this is not here we get a compile error on motor.cpp (WTF! it should be included in motor.h)
+// If this is not here we get a compile error on motor.cpp (WTF! it is included in motor.h)
 #include <PinChangeInt_userData.h>
 
 
