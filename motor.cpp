@@ -27,10 +27,8 @@ void motor::setup(uint8_t a1, uint8_t a2, uint8_t pulse)
 
 void motor::pulse_handler(void* userData)
 {
-    pulse_event *pe;
-    pe = Q_NEW(pulse_event, PULSE_SIG);
     motor* me = (motor*)userData;
-    me->postFIFO(pe);
+    me->postFIFO(Q_NEW(QEvent, PULSE_SIG));
 }
 
 QState motor::initial(motor *me, QEvent const *)

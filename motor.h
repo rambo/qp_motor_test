@@ -25,15 +25,17 @@ enum MotorSignals {
    MAX_SIG                                                  // the last signal
 };
 
-struct pulse_event : public QEvent
-{
-};
-
+/**
+ * pub/sub events published by the motor instances
+ */
 struct motor_event : public QEvent
 {
     uint8_t motor_id;
 };
 
+/**
+ * events posted directly to the motor telling it to drive
+ */
 struct drive_event : public QEvent
 {
     int amount; //contains direction too.
