@@ -49,11 +49,6 @@ QState motor::stopped(motor *me, QEvent const *e)
             DEBUG_PRINT("PWM_TIMEOUT_SIG, stub");
             return Q_HANDLED();
         }
-        case STALL_TIMEOUT_SIG:
-        {
-            DEBUG_PRINT("STALL_TIMEOUT_SIG, stub");
-            return Q_HANDLED();
-        }
         case Q_ENTRY_SIG:
         {
             digitalWrite(me->a1_pin, LOW);
@@ -99,6 +94,7 @@ QState motor::driving(motor *me, QEvent const *e)
     {
         case Q_ENTRY_SIG:
         {
+            me->stall_timer.postIn(me, STALL_TIMEOUT_TICKS);
             if (me->direction)
             {
                 digitalWrite(me->a1_pin, HIGH);
@@ -109,7 +105,17 @@ QState motor::driving(motor *me, QEvent const *e)
                 digitalWrite(me->a1_pin, LOW);
                 digitalWrite(me->a2_pin, HIGH);
             }
+            
             return Q_HANDLED();
+        }
+        case STALL_TIMEOUT_SIG:
+        {
+            DEBUG_PRINT("STALL_TIMEOUT_SIG");
+            motor_event *se;
+            se = Q_NEW(motor_event, MOTOR_STALLED_SIG);
+            // se->motor_id = TODO
+            QF::publish(se);
+            return Q_TRAN(&motor::stopped);
         }
         case DRIVE_SIG:
         {
@@ -118,6 +124,7 @@ QState motor::driving(motor *me, QEvent const *e)
         }
         case PULSE_SIG:
         {
+            me->stall_timer.rearm(STALL_TIMEOUT_TICKS);
             DEBUG_PRINT("PULSE_SIG");
             Serial.print("me->position=");
             Serial.println(me->position, DEC);
@@ -129,7 +136,10 @@ QState motor::driving(motor *me, QEvent const *e)
                 if (me->position >= me->target_position)
                 {
                     DEBUG_PRINT("PULSE_SIG, sending done");
-                    QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
+                    motor_event *de;
+                    de = Q_NEW(motor_event, MOTOR_DONE_SIG);
+                    // de->motor_id = TODO
+                    QF::publish(de);
                     DEBUG_PRINT("PULSE_SIG, transitioning");
                     return Q_TRAN(&motor::stopped);
                 }
@@ -140,7 +150,10 @@ QState motor::driving(motor *me, QEvent const *e)
                 if (me->position <= me->target_position)
                 {
                     DEBUG_PRINT("PULSE_SIG, sending done");
-                    QF::publish(Q_NEW(QEvent, MOTOR_DONE_SIG));
+                    motor_event *de;
+                    de = Q_NEW(motor_event, MOTOR_DONE_SIG);
+                    // de->motor_id = TODO
+                    QF::publish(de);
                     DEBUG_PRINT("PULSE_SIG, transitioning");
                     return Q_TRAN(&motor::stopped);
                 }
@@ -150,6 +163,7 @@ QState motor::driving(motor *me, QEvent const *e)
         }
         case Q_EXIT_SIG:
         {
+            me->stall_timer.disarm();
             digitalWrite(me->a1_pin, LOW);
             digitalWrite(me->a2_pin, LOW);
             return Q_HANDLED();

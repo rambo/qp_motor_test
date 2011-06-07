@@ -7,6 +7,9 @@
 #define DISABLE_PCINT_MULTI_SERVICE
 #include <PinChangeInt_userData.h>
 
+#ifndef STALL_TIMEOUT_TICKS
+#define STALL_TIMEOUT_TICKS (unsigned int)(BSP_TICKS_PER_SEC / 2)
+#endif
 
 
 enum MotorSignals {
@@ -24,6 +27,11 @@ enum MotorSignals {
 
 struct pulse_event : public QEvent
 {
+};
+
+struct motor_event : public QEvent
+{
+    uint8_t motor_id;
 };
 
 struct drive_event : public QEvent
