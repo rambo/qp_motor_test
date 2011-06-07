@@ -35,7 +35,7 @@ void motor::pulse_handler(void* userData)
 
 QState motor::initial(motor *me, QEvent const *)
 {
-    me->subscribe(PULSE_SIG);
+    //me->subscribe(PULSE_SIG);
     return Q_TRAN(&motor::stopped);
 }
 
