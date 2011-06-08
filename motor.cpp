@@ -46,7 +46,7 @@ QState motor::stopped(motor *me, QEvent const *e)
     {
         case Q_ENTRY_SIG:
         {
-            // We need to do this here or the PWM stuff will cause the timer to be disarmed 
+            // We need to do this here or the PWM stuff will play merry hell with the timer (alternatively add another level of hierarchy but that would be kinda ugly too)
             me->stall_timer.disarm();
             digitalWrite(me->a1_pin, LOW);
             digitalWrite(me->a2_pin, LOW);
@@ -65,19 +65,20 @@ QState motor::stopped(motor *me, QEvent const *e)
             {
                 me->direction = false;
             }
-            Serial.print("me->power=");
-            Serial.println(me->power, DEC);
             me->pwm_transition_to_downtime_in = 0; // Clear the counter
             me->pwm_transition_to_uptime_in = (unsigned int)(MOTOR_PWM_FULL_TICKS * (100 - me->power) / 100); // This will evaluate to 0 at 100 power
             if (me->pwm_transition_to_uptime_in)
             {
                 me->pwm_transition_to_downtime_in = MOTOR_PWM_FULL_TICKS - me->pwm_transition_to_uptime_in;
             }
+            DEBUG_PRINT("DRIVE_SIG");
+            Serial.print("me->power=");
+            Serial.println(me->power, DEC);
             Serial.print("me->pwm_transition_to_downtime_in=");
             Serial.println(me->pwm_transition_to_downtime_in, DEC);
             Serial.print("me->pwm_transition_to_uptime_in=");
             Serial.println(me->pwm_transition_to_uptime_in, DEC);
-            // We need to do this here or the PWM stuff will play merry hell with the timer (alternatively add another level of hierarchy but that would be kinda ugly too
+            // We need to do this here or the PWM stuff will play merry hell with the timer (alternatively add another level of hierarchy but that would be kinda ugly too)
             me->stall_timer.postIn(me, STALL_TIMEOUT_TICKS);
             return Q_TRAN(&motor::driving);
         }
@@ -107,7 +108,7 @@ QState motor::driving(motor *me, QEvent const *e)
     {
         case Q_ENTRY_SIG:
         {
-            DEBUG_PRINT("Q_ENTRY_SIG");
+            //DEBUG_PRINT("Q_ENTRY_SIG");
             if (me->pwm_transition_to_downtime_in)
             {
                 me->pwm_timer.postIn(me, me->pwm_transition_to_downtime_in);
@@ -127,7 +128,7 @@ QState motor::driving(motor *me, QEvent const *e)
         }
         case PWM_TIMEOUT_SIG:
         {
-            DEBUG_PRINT("PWM_TIMEOUT_SIG");
+            //DEBUG_PRINT("PWM_TIMEOUT_SIG");
             return Q_TRAN(&motor::driving_downtime);
         }
         case STALL_TIMEOUT_SIG:
@@ -147,11 +148,13 @@ QState motor::driving(motor *me, QEvent const *e)
         case PULSE_SIG:
         {
             me->stall_timer.rearm(STALL_TIMEOUT_TICKS);
+            /*
             DEBUG_PRINT("PULSE_SIG");
             Serial.print("me->position=");
             Serial.println(me->position, DEC);
             Serial.print("me->target_position=");
             Serial.println(me->target_position, DEC);
+            */
             if (me->direction)
             {
                 me->position++;
@@ -162,7 +165,7 @@ QState motor::driving(motor *me, QEvent const *e)
                     de = Q_NEW(motor_event, MOTOR_DONE_SIG);
                     // de->motor_id = TODO
                     QF::publish(de);
-                    DEBUG_PRINT("PULSE_SIG, transitioning");
+                    //DEBUG_PRINT("PULSE_SIG, transitioning");
                     return Q_TRAN(&motor::stopped);
                 }
             }
@@ -176,16 +179,16 @@ QState motor::driving(motor *me, QEvent const *e)
                     de = Q_NEW(motor_event, MOTOR_DONE_SIG);
                     // de->motor_id = TODO
                     QF::publish(de);
-                    DEBUG_PRINT("PULSE_SIG, transitioning");
+                    //DEBUG_PRINT("PULSE_SIG, transitioning");
                     return Q_TRAN(&motor::stopped);
                 }
             }
-            DEBUG_PRINT("PULSE_SIG, handled");
+            //DEBUG_PRINT("PULSE_SIG, handled");
             return Q_HANDLED();
         }
         case Q_EXIT_SIG:
         {
-            DEBUG_PRINT("Q_EXIT_SIG");
+            //DEBUG_PRINT("Q_EXIT_SIG");
             digitalWrite(me->a1_pin, LOW);
             digitalWrite(me->a2_pin, LOW);
             return Q_HANDLED();
@@ -200,18 +203,18 @@ QState motor::driving_downtime(motor *me, QEvent const *e)
     {
         case Q_ENTRY_SIG:
         {
-            DEBUG_PRINT("Q_ENTRY_SIG");
+            //DEBUG_PRINT("Q_ENTRY_SIG");
             me->pwm_timer.postIn(me, me->pwm_transition_to_uptime_in);
             return Q_HANDLED();
         }
         case PWM_TIMEOUT_SIG:
         {
-            DEBUG_PRINT("PWM_TIMEOUT_SIG");
+            //DEBUG_PRINT("PWM_TIMEOUT_SIG");
             return Q_TRAN(&motor::driving);
         }
         case Q_EXIT_SIG:
         {
-            DEBUG_PRINT("Q_EXIT_SIG");
+            //DEBUG_PRINT("Q_EXIT_SIG");
             return Q_HANDLED();
         }
     }

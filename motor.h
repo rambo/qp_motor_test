@@ -4,7 +4,7 @@
 #include "qp_port.h"
 #include "bsp.h"
 // This might not be needed, or even desired but it should make debugging simpler
-#define DISABLE_PCINT_MULTI_SERVICE
+//#define DISABLE_PCINT_MULTI_SERVICE
 #include <PinChangeInt_userData.h>
 
 // Default stall timeout in ticks, defaults to 0.5s
@@ -14,7 +14,7 @@
 
 // Define PWM frequency if not defined, in Hz
 #ifndef MOTOR_PWM_FREQ
-#define MOTOR_PWM_FREQ 25
+#define MOTOR_PWM_FREQ 100
 #endif
 
 #define MOTOR_PWM_FULL_TICKS (unsigned int)(BSP_TICKS_PER_SEC / MOTOR_PWM_FREQ)
@@ -47,7 +47,7 @@ struct motor_event : public QEvent
 struct drive_event : public QEvent
 {
     int amount; //contains direction too.
-    uint8_t power; //1-100
+    uint8_t power; //1-100, resolution strongly dependent on the BSP_TICKS_PER_SEC constant
     
     // yeaya, "bad form" to implement but since I just want to initialize this value I'll do it
     drive_event()

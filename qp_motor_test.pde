@@ -18,9 +18,10 @@ static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 void setup()
 {
     BSP_init();                                          // initialize the BSP
-    
     Serial.print("MOTOR_PWM_FULL_TICKS=");
     Serial.println(MOTOR_PWM_FULL_TICKS, DEC);
+    Serial.print("STALL_TIMEOUT_TICKS=");
+    Serial.println(STALL_TIMEOUT_TICKS, DEC);
     Serial.print("sizeof(drive_event)=");
     Serial.println(sizeof(drive_event), DEC);
 
