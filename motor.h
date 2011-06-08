@@ -47,12 +47,12 @@ struct motor_event : public QEvent
 struct drive_event : public QEvent
 {
     int amount; //contains direction too.
-    uint8_t power; //1-100, resolution strongly dependent on the BSP_TICKS_PER_SEC constant
+    uint8_t power; //1-10
     
     // yeaya, "bad form" to implement but since I just want to initialize this value I'll do it
     drive_event()
     {
-        this->power = 100;
+        this->power = 10;
     }
 };
 
@@ -75,6 +75,7 @@ class motor : public QActive
         QTimeEvt stall_timer;
         unsigned int pwm_transition_to_downtime_in;
         unsigned int pwm_transition_to_uptime_in;
+        unsigned int stall_timeout_adjusted;
 
         static QState initial (motor *me, QEvent const *e);
         static QState stopped (motor *me, QEvent const *e);

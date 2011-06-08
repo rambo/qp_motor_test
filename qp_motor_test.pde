@@ -30,6 +30,7 @@ void setup()
     QF::psInit(l_subscrSto, Q_DIM(l_subscrSto));     // init publish-subscribe
 
     motors[0].setup(2,3,4);
+    // Q_DIM(l_motorQueueSto[0]) I have a nagging feeling this should be something else (probably related to the size of the drive_event)
     motors[0].start(1, l_motorQueueSto[0], Q_DIM(l_motorQueueSto[0]));
 
     /*
@@ -41,7 +42,7 @@ void setup()
     drive_event *de;
     de = Q_NEW(drive_event, DRIVE_SIG);
     de->amount = -100;
-    de->power = 80;
+    de->power = 6;
     motors[0].postFIFO(de);
 
 }

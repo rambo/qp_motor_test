@@ -12,7 +12,7 @@ Q_DEFINE_THIS_FILE
  */
 motor::motor() : QActive((QStateHandler)&motor::initial), pwm_timer(PWM_TIMEOUT_SIG), stall_timer(STALL_TIMEOUT_SIG)
 {
-    this->power = 100;
+    this->power = 10;
 }
 
 void motor::setup(uint8_t a1, uint8_t a2, uint8_t pulse)
@@ -30,6 +30,7 @@ void motor::setup(uint8_t a1, uint8_t a2, uint8_t pulse)
 
 void motor::pulse_handler(void* userData)
 {
+    //DEBUG_PRINT("Pulse INT");
     motor* me = (motor*)userData;
     me->postFIFO(Q_NEW(QEvent, PULSE_SIG));
 }
@@ -55,7 +56,7 @@ QState motor::stopped(motor *me, QEvent const *e)
         case DRIVE_SIG:
         {
             me->power = ((drive_event *)e)->power;
-            Q_ASSERT(me->power < 101);
+            Q_ASSERT(me->power < 11);
             me->target_position += ((drive_event *)e)->amount;
             if (((drive_event *)e)->amount > 0)
             {
@@ -66,7 +67,7 @@ QState motor::stopped(motor *me, QEvent const *e)
                 me->direction = false;
             }
             me->pwm_transition_to_downtime_in = 0; // Clear the counter
-            me->pwm_transition_to_uptime_in = (unsigned int)(MOTOR_PWM_FULL_TICKS * (100 - me->power) / 100); // This will evaluate to 0 at 100 power
+            me->pwm_transition_to_uptime_in = (unsigned int)(MOTOR_PWM_FULL_TICKS * (10 - me->power) / 10); // This will evaluate to 0 at 10 power
             if (me->pwm_transition_to_uptime_in)
             {
                 me->pwm_transition_to_downtime_in = MOTOR_PWM_FULL_TICKS - me->pwm_transition_to_uptime_in;
@@ -78,8 +79,11 @@ QState motor::stopped(motor *me, QEvent const *e)
             Serial.println(me->pwm_transition_to_downtime_in, DEC);
             Serial.print("me->pwm_transition_to_uptime_in=");
             Serial.println(me->pwm_transition_to_uptime_in, DEC);
+            me->stall_timeout_adjusted = (unsigned int)(STALL_TIMEOUT_TICKS * (20 - me->power) / 10); // Evaluates to at STALL_TIMEOUT_TICKS 10 power
+            Serial.print("me->stall_timeout_adjusted=");
+            Serial.println(me->stall_timeout_adjusted, DEC);
             // We need to do this here or the PWM stuff will play merry hell with the timer (alternatively add another level of hierarchy but that would be kinda ugly too)
-            me->stall_timer.postIn(me, STALL_TIMEOUT_TICKS);
+            me->stall_timer.postIn(me, me->stall_timeout_adjusted); // Adjust the stall timer up when power is below 100
             return Q_TRAN(&motor::driving);
         }
         // Track pulses from inertia etc
@@ -147,9 +151,9 @@ QState motor::driving(motor *me, QEvent const *e)
         }
         case PULSE_SIG:
         {
-            me->stall_timer.rearm(STALL_TIMEOUT_TICKS);
-            /*
+            me->stall_timer.rearm(me->stall_timeout_adjusted);
             DEBUG_PRINT("PULSE_SIG");
+            /*
             Serial.print("me->position=");
             Serial.println(me->position, DEC);
             Serial.print("me->target_position=");
