@@ -17,7 +17,7 @@
 //    Serial.print(__FUNCDNAME__); \
 
                                                  // Sys timer tick per seconds
-#define BSP_TICKS_PER_SEC    500
+#define BSP_TICKS_PER_SEC    1000
 
 void BSP_init(void);
 

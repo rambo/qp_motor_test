@@ -18,6 +18,9 @@ static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 void setup()
 {
     BSP_init();                                          // initialize the BSP
+    
+    Serial.print("MOTOR_PWM_FULL_TICKS=");
+    Serial.println(MOTOR_PWM_FULL_TICKS, DEC);
     Serial.print("sizeof(drive_event)=");
     Serial.println(sizeof(drive_event), DEC);
 
@@ -28,13 +31,16 @@ void setup()
     motors[0].setup(2,3,4);
     motors[0].start(1, l_motorQueueSto[0], Q_DIM(l_motorQueueSto[0]));
 
-    Serial.println("drive_event *de;");
+    /*
     drive_event *de;
-    // This triggers assert, apparently we run out of pool space, which should not be possible unless our pool init is messed up.
-    Serial.println("de = Q_NEW(drive_event, DRIVE_SIG);");
     de = Q_NEW(drive_event, DRIVE_SIG);
     de->amount = -100;
-    Serial.println("motors[0].postFIFO(de);");
+    motors[0].postFIFO(de);
+    */
+    drive_event *de;
+    de = Q_NEW(drive_event, DRIVE_SIG);
+    de->amount = -100;
+    de->power = 80;
     motors[0].postFIFO(de);
 
 }

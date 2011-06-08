@@ -7,9 +7,17 @@
 #define DISABLE_PCINT_MULTI_SERVICE
 #include <PinChangeInt_userData.h>
 
+// Default stall timeout in ticks, defaults to 0.5s
 #ifndef STALL_TIMEOUT_TICKS
 #define STALL_TIMEOUT_TICKS (unsigned int)(BSP_TICKS_PER_SEC / 2)
 #endif
+
+// Define PWM frequency if not defined, in Hz
+#ifndef MOTOR_PWM_FREQ
+#define MOTOR_PWM_FREQ 25
+#endif
+
+#define MOTOR_PWM_FULL_TICKS (unsigned int)(BSP_TICKS_PER_SEC / MOTOR_PWM_FREQ)
 
 
 enum MotorSignals {
@@ -39,6 +47,13 @@ struct motor_event : public QEvent
 struct drive_event : public QEvent
 {
     int amount; //contains direction too.
+    uint8_t power; //1-100
+    
+    // yeaya, "bad form" to implement but since I just want to initialize this value I'll do it
+    drive_event()
+    {
+        this->power = 100;
+    }
 };
 
 class motor : public QActive
@@ -49,6 +64,7 @@ class motor : public QActive
         static void pulse_handler(void* me_ptr);
 
     protected:
+        uint8_t power;
         uint8_t a1_pin;
         uint8_t a2_pin;
         uint8_t pulse_pin;
@@ -57,10 +73,13 @@ class motor : public QActive
         int target_position;
         QTimeEvt pwm_timer;
         QTimeEvt stall_timer;
+        unsigned int pwm_transition_to_downtime_in;
+        unsigned int pwm_transition_to_uptime_in;
 
         static QState initial (motor *me, QEvent const *e);
         static QState stopped (motor *me, QEvent const *e);
         static QState driving (motor *me, QEvent const *e);
+        static QState driving_downtime (motor *me, QEvent const *e);
 
         static void pulse_handler();
 };
