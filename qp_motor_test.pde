@@ -42,7 +42,7 @@ void setup()
     drive_event *de;
     de = Q_NEW(drive_event, DRIVE_SIG);
     de->amount = -100;
-    de->power = 6;
+    de->power = 2;
     motors[0].postFIFO(de);
 
 }

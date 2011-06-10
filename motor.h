@@ -14,7 +14,7 @@
 
 // Define PWM frequency if not defined, in Hz
 #ifndef MOTOR_PWM_FREQ
-#define MOTOR_PWM_FREQ 100
+#define MOTOR_PWM_FREQ 25
 #endif
 
 #define MOTOR_PWM_FULL_TICKS (unsigned int)(BSP_TICKS_PER_SEC / MOTOR_PWM_FREQ)
