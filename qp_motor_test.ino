@@ -55,7 +55,7 @@ void setup()
 
 /*
 // It seems this is required by PinChangeInt 
-#include <WProgram.h>
+#include <Arduino.h>
 #define DISABLE_PCINT_MULTI_SERVICE
 #include <PinChangeInt.h>
 
