@@ -68,7 +68,7 @@ class motor : public QActive
         uint8_t a1_pin;
         uint8_t a2_pin;
         uint8_t pulse_pin;
-        boolean direction;
+        uint8_t direction;
         int position;
         int target_position;
         QTimeEvt pwm_timer;

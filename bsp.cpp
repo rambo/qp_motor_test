@@ -112,7 +112,7 @@ void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     Serial.print(" in "); 
     /**
      * Doesn't really work, gives just garbage out
-    byte buffer;
+    uint8_t buffer;
     PGM_P pointer = (PGM_P)*file;
     do
     {
