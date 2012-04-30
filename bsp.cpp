@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "qp_port.h"
 #include "bsp.h"
-#include <Wprogram.h>
+#include <Arduino.h>
 #include <avr/pgmspace.h>
 
 
@@ -119,7 +119,7 @@ void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
         buffer = Q_ROM_BYTE(pointer++);
         Serial.print(buffer, HEX); // Gives abunch of output, mostly unprintable characters ?
         Serial.print("=");
-        Serial.print(buffer, BYTE); // Gives little output, mostly blanks.
+        Serial.write(buffer); // Gives little output, mostly blanks.
     } while (buffer != NULL);
     */
     Serial.print(":"); 

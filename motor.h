@@ -1,6 +1,6 @@
 #ifndef motor_h
 #define motor_h
-#include <Arduino.h> 
+#include <Arduino.h>
 #include "qp_port.h"
 #include "bsp.h"
 // This might not be needed, or even desired but it should make debugging simpler
