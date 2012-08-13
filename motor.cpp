@@ -73,14 +73,14 @@ QState motor::stopped(motor *me, QEvent const *e)
                 me->pwm_transition_to_downtime_in = MOTOR_PWM_FULL_TICKS - me->pwm_transition_to_uptime_in;
             }
             DEBUG_PRINT("DRIVE_SIG");
-            Serial.print("me->power=");
+            Serial.print(F("me->power="));
             Serial.println(me->power, DEC);
-            Serial.print("me->pwm_transition_to_downtime_in=");
+            Serial.print(F("me->pwm_transition_to_downtime_in="));
             Serial.println(me->pwm_transition_to_downtime_in, DEC);
-            Serial.print("me->pwm_transition_to_uptime_in=");
+            Serial.print(F("me->pwm_transition_to_uptime_in="));
             Serial.println(me->pwm_transition_to_uptime_in, DEC);
             me->stall_timeout_adjusted = (unsigned int)(STALL_TIMEOUT_TICKS * (20 - me->power) / 10); // Evaluates to at STALL_TIMEOUT_TICKS 10 power
-            Serial.print("me->stall_timeout_adjusted=");
+            Serial.print(F("me->stall_timeout_adjusted="));
             Serial.println(me->stall_timeout_adjusted, DEC);
             // We need to do this here or the PWM stuff will play merry hell with the timer (alternatively add another level of hierarchy but that would be kinda ugly too)
             me->stall_timer.postIn(me, me->stall_timeout_adjusted); // Adjust the stall timer up when power is below 100
@@ -98,7 +98,7 @@ QState motor::stopped(motor *me, QEvent const *e)
                 me->position--;
             }
             DEBUG_PRINT("PULSE_SIG");
-            Serial.print("me->position=");
+            Serial.print(F("me->position="));
             Serial.println(me->position, DEC);
             return Q_HANDLED();
         }
@@ -154,9 +154,9 @@ QState motor::driving(motor *me, QEvent const *e)
             me->stall_timer.rearm(me->stall_timeout_adjusted);
             DEBUG_PRINT("PULSE_SIG");
             /*
-            Serial.print("me->position=");
+            Serial.print(F("me->position="));
             Serial.println(me->position, DEC);
-            Serial.print("me->target_position=");
+            Serial.print(F("me->target_position="));
             Serial.println(me->target_position, DEC);
             */
             if (me->direction)

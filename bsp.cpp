@@ -52,7 +52,7 @@ Q_DEFINE_THIS_FILE
 ISR(TIMER2_COMPA_vect) {
     // No need to clear the interrupt source since the Timer2 compare
     // interrupt is automatically cleard in hardware when the ISR runs.
-    //Serial.println("Tick");
+    //Serial.println(F("Tick"));
     QF::tick();                               // process all armed time events
 }
 
@@ -62,7 +62,7 @@ void BSP_init(void) {
     PORTB = 0x00;                                        // drive all pins low
 
     Serial.begin(115200);
-    Serial.println("Start");
+    Serial.println(F("Start"));
 
 
 }
@@ -104,12 +104,12 @@ void QF::onIdle(QF_INT_KEY_TYPE key) {
 //............................................................................
 void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     Serial.print(millis()); 
-    Serial.print(": ASSERT "); 
+    Serial.print(F(": ASSERT ")); 
     /*
-    Serial.print(" *file=");
+    Serial.print(F(" *file="));
     Serial.println(*file, HEX);
     */
-    Serial.print(" in "); 
+    Serial.print(F(" in ")); 
     /**
      * Doesn't really work, gives just garbage out
     byte buffer;
@@ -118,11 +118,11 @@ void Q_onAssert(char const Q_ROM * const Q_ROM_VAR file, int line) {
     {
         buffer = Q_ROM_BYTE(pointer++);
         Serial.print(buffer, HEX); // Gives abunch of output, mostly unprintable characters ?
-        Serial.print("=");
+        Serial.print(F("="));
         Serial.write(buffer); // Gives little output, mostly blanks.
     } while (buffer != NULL);
     */
-    Serial.print(":"); 
+    Serial.print(F(":")); 
     Serial.println(line, DEC); 
     cli();                                              // lock all interrupts
     USER_LED_ON();                                  // User LED permanently ON

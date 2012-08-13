@@ -18,11 +18,11 @@ static QSubscrList   l_subscrSto[MAX_PUB_SIG];
 void setup()
 {
     BSP_init();                                          // initialize the BSP
-    Serial.print("MOTOR_PWM_FULL_TICKS=");
+    Serial.print(F("MOTOR_PWM_FULL_TICKS="));
     Serial.println(MOTOR_PWM_FULL_TICKS, DEC);
-    Serial.print("STALL_TIMEOUT_TICKS=");
+    Serial.print(F("STALL_TIMEOUT_TICKS="));
     Serial.println(STALL_TIMEOUT_TICKS, DEC);
-    Serial.print("sizeof(drive_event)=");
+    Serial.print(F("sizeof(drive_event)="));
     Serial.println(sizeof(drive_event), DEC);
 
     QF::init();       // initialize the framework and the underlying RT kernel
@@ -61,25 +61,25 @@ void setup()
 
 void wheel_encoder_pulse_hi()
 {
-    Serial.print("w RISING pulse @");
+    Serial.print(F("w RISING pulse @"));
     Serial.println(micros(), DEC);
 }
 
 void wheel_encoder_pulse_lo()
 {
-    Serial.print("w FALLING pulse @");
+    Serial.print(F("w FALLING pulse @"));
     Serial.println(micros(), DEC);
 }
 
 void ir_rec_hi()
 {
-    Serial.print("IR RISING pulse @");
+    Serial.print(F("IR RISING pulse @"));
     Serial.println(micros(), DEC);
 }
 
 void ir_rec_lo()
 {
-    Serial.print("IR FALLING pulse @");
+    Serial.print(F("IR FALLING pulse @"));
     Serial.println(micros(), DEC);
 }
 
@@ -88,7 +88,7 @@ void setup()
 {
     Serial.begin(115200);  // start serial for output
     Serial.flush();
-    Serial.println("Booting");
+    Serial.println(F("Booting"));
 
     pinMode(2, OUTPUT);
     pinMode(3, OUTPUT);
@@ -103,7 +103,7 @@ void setup()
     PCintPort::attachInterrupt(8, &ir_rec_hi, RISING);
     PCintPort::attachInterrupt(8, &ir_rec_lo, FALLING);
 
-    Serial.println("Booted");
+    Serial.println(F("Booted"));
 }
 
 
@@ -112,17 +112,17 @@ void loop()
 {
     delay(1000);
     i++;
-    Serial.print("i=");
+    Serial.print(F("i="));
     Serial.println(i, DEC);
     if (!(i % 2))
     {
-        Serial.println("Foo");
+        Serial.println(F("Foo"));
         digitalWrite(2, HIGH);
         digitalWrite(3, LOW);
     }
     else
     {
-        Serial.println("Bar");
+        Serial.println(F("Bar"));
         digitalWrite(2, LOW);
         digitalWrite(3, HIGH);
     }
